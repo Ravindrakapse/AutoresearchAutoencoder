@@ -32,7 +32,7 @@ import prepare
 
 LATENT_DIM = 16
 HIDDEN = [256, 64]      # encoder widths; decoder mirrors. bottleneck is always LATENT_DIM.
-ACT = "gelu"            # relu | gelu | tanh
+ACT = "silu"            # relu | gelu | tanh | silu
 DROPOUT = 0.1
 BATCH_NORM = True
 NOISE_STD = 0.3         # denoising AE: Gaussian input corruption during training
@@ -55,7 +55,7 @@ D = Ytr.shape[1]
 Xtr = torch.from_numpy(Ytr).to(device)
 print(f"device={device}  train={Xtr.shape}  D={D}  latent={LATENT_DIM}")
 
-_ACTS = {"relu": nn.ReLU, "gelu": nn.GELU, "tanh": nn.Tanh}
+_ACTS = {"relu": nn.ReLU, "gelu": nn.GELU, "tanh": nn.Tanh, "silu": nn.SiLU}
 
 
 class AE(nn.Module):
