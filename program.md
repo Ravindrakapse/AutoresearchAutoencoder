@@ -34,11 +34,17 @@ it otherwise, and repeat — indefinitely.
 normalization, dropout, optimizer, LR schedule, batch size, regularization, weight init, etc.
 
 **You CANNOT**:
-- Modify `prepare.py` — it holds the fixed split, preprocessing, TIME_BUDGET, and the metric
-  `evaluate_recon` (the ground truth). Do not touch it.
+- Modify `prepare.py` — it holds the fixed split, preprocessing, TIME_BUDGET, and the metrics
+  `evaluate_ae` / `evaluate_recon` (the ground truth). Do not touch it.
 - Change the metric or the split (both live in `prepare.py`; `baselines.py` only reports them).
 - Change what data is used or how val/test are defined.
 - Add heavyweight dependencies. numpy + torch + xarray only.
+- **Inflate the bottleneck.** The model MUST be a single encoder → exactly `LATENT_DIM` numbers
+  → decoder, scored via `prepare.evaluate_ae(encode, decode, LATENT_DIM)`. No skip / residual /
+  parallel path from the input to the output (that smuggles in extra latent capacity and makes
+  the PCA-at-LATENT_DIM comparison meaningless). `evaluate_ae` asserts the code width, so this
+  fails loudly. You MAY change `LATENT_DIM` itself — but then you are compared to PCA at that
+  same size. The whole point is nonlinear-vs-linear at an **equal, honest** bottleneck.
 
 **Fixed time budget**: `train.py` trains for `prepare.TIME_BUDGET` seconds (wall clock), so
 you never optimize for speed — a bigger/better model in the same budget is a fair win. If a
@@ -97,8 +103,13 @@ LOOP FOREVER:
 5. `grep "^val_nrmse2:\|^pca_ref_nrmse2:" run.log`.
 6. Empty grep → crashed → `tail -n 50 run.log`, fix if trivial (typo/import), else log `crash`.
 7. Record in `results.tsv`.
-8. Improved (lower val_nrmse2) → keep the commit, advance.
-9. Equal or worse → `git reset --hard` back to the previous kept commit.
+8. Improved (lower val_nrmse2 than the best **kept** experiment so far — the baseline AE if
+   none yet) → keep the commit, advance. This holds even while still **above** PCA: banking
+   every real improvement is what lets the hill-climb ratchet down toward (and past) the bar.
+9. Equal or worse than the best kept so far → `git reset --hard` back to the previous kept commit.
+
+**PCA is the GOAL to beat, not the keep/discard gate.** Never discard an experiment merely
+because it hasn't beaten PCA yet — compare only against your own best kept result.
 
 **NEVER STOP** once the loop starts. Do not ask the human whether to continue — they may be
 away. If out of ideas, think harder: re-read the files, combine near-misses, try more radical

@@ -158,6 +158,37 @@ def evaluate_recon(reconstruct_fn, split="val"):
     return float(nrmse2), float(1.0 - nrmse2)
 
 
+def evaluate_ae(encode_fn, decode_fn, latent_dim, split="val"):
+    """
+    STRICT autoencoder metric — the fair way to compare against PCA at a fixed latent dim.
+
+    encode_fn: (n, D) Y  -> (n, latent_dim) code
+    decode_fn: (n, latent_dim) code -> (n, D) Yhat
+
+    The reconstruction is forced to pass through a single code of EXACTLY `latent_dim`
+    numbers: decode_fn only ever sees the code, never the input, so no skip/residual path
+    can widen the effective bottleneck. The code width is asserted, so an experiment cannot
+    silently inflate the latent dimension (e.g. by adding a parallel linear skip) and still
+    call itself latent_dim. This keeps "AE vs PCA at latent k" an honest comparison.
+
+    Returns (nrmse2, r2) — same area-weighted metric as evaluate_recon.
+    """
+    Y = np.asarray(get_split(split), dtype=np.float64)
+    Z = np.asarray(encode_fn(Y.astype(np.float32)))
+    assert Z.ndim == 2 and Z.shape[0] == Y.shape[0], \
+        f"encode_fn must return (n, latent_dim); got {Z.shape}"
+    assert Z.shape[1] == latent_dim, (
+        f"code width {Z.shape[1]} != declared latent_dim {latent_dim}. The bottleneck must be "
+        f"exactly latent_dim numbers — no extra/skip/parallel dimensions."
+    )
+    Yhat = np.asarray(decode_fn(Z.astype(np.float32)), dtype=np.float64)
+    assert Yhat.shape == Y.shape, f"decode_fn shape {Yhat.shape} != {Y.shape}"
+    num = ((Y - Yhat) ** 2).sum(axis=1).mean()
+    den = (Y ** 2).sum(axis=1).mean()
+    nrmse2 = num / den
+    return float(nrmse2), float(1.0 - nrmse2)
+
+
 # ---------------------------------------------------------------------------
 # Sanity check
 # ---------------------------------------------------------------------------
