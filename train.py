@@ -31,6 +31,7 @@ DROPOUT = 0.0
 BATCH_SIZE = 32
 LR = 1e-3
 WEIGHT_DECAY = 1e-5
+NOISE_STD = 0.3         # denoising AE: Gaussian input corruption during training
 TIE_STD_INPUT = False   # (reserved) placeholder for future input-norm experiments
 
 # ---------------------------------------------------------------------------
@@ -94,7 +95,8 @@ while time.time() - t_train0 < prepare.TIME_BUDGET:
     for i in range(0, n, BATCH_SIZE):
         xb = Xtr[perm[i:i + BATCH_SIZE]]
         opt.zero_grad(set_to_none=True)
-        loss = loss_fn(model(xb), xb)
+        xb_in = xb + NOISE_STD * torch.randn_like(xb) if NOISE_STD > 0 else xb
+        loss = loss_fn(model(xb_in), xb)
         loss.backward()
         opt.step()
     epoch += 1
