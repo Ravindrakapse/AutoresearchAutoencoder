@@ -16,7 +16,7 @@ it otherwise, and repeat — indefinitely.
 
 ## Setup (do once, then start the loop)
 
-1. **Run tag**: propose one from today's date (e.g. `aug26`). Branch `autoresearch/<tag>`
+1. **Run tag**: propose one from today's date (e.g. `sep17`). Branch `autoresearch/<tag>`
    must not already exist. Create it: `git checkout -b autoresearch/<tag>`.
 2. **Read in-scope files**: `README.md`, `prepare.py` (frozen), `train.py` (you edit),
    `baselines.py` (the bar).
@@ -36,7 +36,7 @@ normalization, dropout, optimizer, LR schedule, batch size, regularization, weig
 **You CANNOT**:
 - Modify `prepare.py` — it holds the fixed split, preprocessing, TIME_BUDGET, and the metric
   `evaluate_recon` (the ground truth). Do not touch it.
-- Modify `baselines.py`'s definition of the metric or the split.
+- Change the metric or the split (both live in `prepare.py`; `baselines.py` only reports them).
 - Change what data is used or how val/test are defined.
 - Add heavyweight dependencies. numpy + torch + xarray only.
 
@@ -110,9 +110,16 @@ The scientific question: does a nonlinear model capture more of the OLR field th
 EOFs at the same latent dim? First goal is to cleanly beat PCA at a fixed latent dim; then
 push further. How you get there is up to you — explore the space of architectures, objectives,
 regularizers, optimizers and training schedules yourself. Note the main practical constraint:
-there are only ~220 training weeks against D=10368, so overfitting is the dominant risk.
+the input is high-dimensional (D=10368) with ~3,140 training weeks, so a large model still
+overfits — the unmodified baseline AE already loses to PCA. Capacity control and regularization
+are the dominant lever.
 
 If you introduce any auxiliary objective, remember the FIXED metric is reconstruction
 (`evaluate_recon` on val) — an auxiliary term only counts if it improves that.
+
+**Web search** is allowed for inspiration when you want fresh directions or are stuck —
+architectures, regularizers, autoencoder / dimensionality-reduction methods for spatial
+fields. But it is optional, not required each loop; implement only within the allowed deps
+(numpy / torch / xarray), and never change the metric, the split, or the data.
 
 Keep each experiment a single, describable change so results.tsv stays a clean research log.
