@@ -87,6 +87,12 @@ loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical 
 # ---------------------------------------------------------------------------
 
 n = Xtr.shape[0]
+steps_per_epoch = (n + BATCH_SIZE - 1) // BATCH_SIZE
+# Estimate total steps from budget: ~120s, rough epoch time from a quick probe
+EST_EPOCHS = 600  # conservative estimate; scheduler wraps if exceeded
+total_steps = EST_EPOCHS * steps_per_epoch
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=total_steps, eta_min=1e-5)
+
 t_train0 = time.time()
 epoch = 0
 while time.time() - t_train0 < prepare.TIME_BUDGET:
@@ -99,6 +105,7 @@ while time.time() - t_train0 < prepare.TIME_BUDGET:
         loss = loss_fn(model(xb_in), xb)
         loss.backward()
         opt.step()
+        scheduler.step()
     epoch += 1
 training_seconds = time.time() - t_train0
 
