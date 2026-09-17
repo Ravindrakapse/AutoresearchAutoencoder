@@ -57,7 +57,7 @@ class AE(nn.Module):
         # Encoder: D -> hidden... -> latent
         enc, d = [], D
         for h in hidden:
-            enc += [nn.Linear(d, h), Act()]
+            enc += [nn.Linear(d, h), nn.BatchNorm1d(h), Act()]
             if dropout > 0:
                 enc += [nn.Dropout(dropout)]
             d = h
@@ -66,7 +66,7 @@ class AE(nn.Module):
         # Decoder: latent -> reverse(hidden)... -> D
         dec, d = [], latent
         for h in reversed(hidden):
-            dec += [nn.Linear(d, h), Act()]
+            dec += [nn.Linear(d, h), nn.BatchNorm1d(h), Act()]
             if dropout > 0:
                 dec += [nn.Dropout(dropout)]
             d = h
