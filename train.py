@@ -91,7 +91,10 @@ steps_per_epoch = (n + BATCH_SIZE - 1) // BATCH_SIZE
 # Estimate total steps from budget: ~120s, rough epoch time from a quick probe
 EST_EPOCHS = 600  # conservative estimate; scheduler wraps if exceeded
 total_steps = EST_EPOCHS * steps_per_epoch
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=total_steps, eta_min=1e-5)
+warmup_steps = total_steps // 20  # 5% linear warmup
+scheduler_cosine = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=total_steps - warmup_steps, eta_min=1e-5)
+scheduler_warmup = torch.optim.lr_scheduler.LinearLR(opt, start_factor=1e-2, end_factor=1.0, total_iters=warmup_steps)
+scheduler = torch.optim.lr_scheduler.SequentialLR(opt, schedulers=[scheduler_warmup, scheduler_cosine], milestones=[warmup_steps])
 
 t_train0 = time.time()
 epoch = 0
