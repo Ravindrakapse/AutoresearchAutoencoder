@@ -27,7 +27,7 @@ import prepare
 LATENT_DIM = 16
 HIDDEN = [512, 128]      # encoder widths; decoder mirrors it. [] = single linear layer.
 ACT = "gelu"            # relu | gelu | tanh
-DROPOUT = 0.0
+DROPOUT = 0.1
 BATCH_SIZE = 32
 LR = 1e-3
 WEIGHT_DECAY = 1e-5
