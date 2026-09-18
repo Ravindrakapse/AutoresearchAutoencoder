@@ -49,3 +49,4 @@ pending	0.359074	0.640926	discard	Narrow hidden [128]->[96]; 14.5K params, 3606 
 pending	0.358046	0.641954	discard	Widen hidden [128]->[192]; 28.9K params, 3408 epochs — extra capacity didn't improve, slightly worse
 pending	0.354971	0.645029	keep	BN cumulative moving avg for EMA stat refresh (reset_running_stats + momentum=None); more accurate BN stats, new best
 pending	0.356306	0.643694	discard	Progressive dropout annealing (0.05→0.15 over training); increasing regularization didn't help — constant 0.1 better
+pending	0.355589	0.644411	discard	Post-activation BN (Linear→SiLU→BN→Dropout instead of Linear→BN→SiLU→Dropout); slightly worse — pre-activation BN better for tied weights
