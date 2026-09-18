@@ -32,3 +32,4 @@ pending	0.358222	0.641778	discard	EMA decay 0.998→0.999 (wider averaging windo
 pending	0.356683	0.643317	discard	Latent-skip projection (zero-init Linear 16→128 added to first decoder hidden); marginal overhead, slightly worse
 pending	0.356941	0.643059	discard	Latent noise injection (std=0.1) on 16-dim code during training; noise regularization hurt reconstruction
 pending	0.356376	0.643624	discard	EMA decay annealing 0.99→0.999 over training; addressed early-param issue but still slightly worse than constant 0.998
+pending	0.357944	0.642056	discard	Learnable per-component scaling (log_scale param on PCA dims); extra freedom didn't help, slightly worse
