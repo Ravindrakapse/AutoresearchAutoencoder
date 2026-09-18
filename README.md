@@ -19,7 +19,7 @@ nonlinear autoencoder capture more structure than linear EOF/PCA at the same lat
 | `baselines.py` | mean field + PCA/EOF ladder — the bar the AE must beat | nobody |
 | `train.py` | the nonlinear autoencoder — architecture, optimizer, training loop | **the agent** |
 | `program.md` | agent instructions (open-ended — the agent explores architectures itself) | the human |
-| `results.tsv` | experiment log (untracked) | the agent |
+| `results.tsv` | experiment log (tracked, committed each iteration) | the agent |
 
 ## The metric
 
@@ -31,9 +31,8 @@ weighting baked in. Metric: `val_nrmse2 = mean‖Y−Ŷ‖² / mean‖Y‖²` (m
 
 ## Data
 
-Weekly OLR is produced by `../OLR_data/make_weekly.py --coarsen 10` →
-`../OLR_data/weekly_olr/era5_olr_weekly_*_c10.nc`. `prepare.py` globs it and picks up more
-years automatically as they are added. See `../OLR_data/DATASET.md` for provenance.
+Weekly OLR fields (2.5° global, cos-lat area-weighted) are prepared once by the data-prep
+script and loaded automatically by `prepare.py`, which picks up more years as they are added.
 
 ## Quick start
 
@@ -45,7 +44,7 @@ python train.py > run.log 2>&1   # one autoencoder experiment (fixed time budget
 grep "^val_nrmse2:" run.log
 ```
 
-GPU: `train.py` auto-uses CUDA if available (run on **node9**), else CPU.
+GPU: `train.py` auto-uses CUDA if available, else CPU.
 
 ## Running the agent
 
