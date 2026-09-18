@@ -41,3 +41,4 @@ pending	0.356347	0.643653	discard	Mish activation (x*tanh(softplus(x))) instead 
 pending	0.357249	0.642751	discard	NAdam optimizer (Nesterov-accelerated Adam) instead of AdamW; Nesterov look-ahead didn't help, slightly worse
 pending	0.357503	0.642497	discard	Learnable Swish activation (x*sigmoid(beta*x), beta trained from 1.0); learned beta diverged from SiLU, slightly worse
 pending	0.364724	0.635276	discard	LayerNorm on 16-dim latent code (per-sample normalization); bottleneck normalization hurts — too restrictive on code representation
+pending	0.357375	0.642625	discard	Lookahead optimizer (k=6, alpha=0.5) wrapping AdamW; slow-weight sync disrupted fine optimization trajectory, slightly worse
