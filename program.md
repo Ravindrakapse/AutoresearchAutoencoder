@@ -25,7 +25,8 @@ it otherwise, and repeat — indefinitely.
    `OLR_data/make_weekly.py --coarsen 10`.
 4. **Establish the bar**: `python baselines.py > baselines.log 2>&1`, read the PCA table.
    PCA at a given latent dim is what the nonlinear AE must beat at the SAME latent dim.
-5. **Init results**: create `results.tsv` with just the header row (leave it untracked).
+5. **Init results**: create `results.tsv` with just the header row (it is tracked in git and
+   committed with each experiment).
 6. Confirm, then start experimenting.
 
 ## Rules
@@ -84,7 +85,7 @@ device:           cuda
 Extract with: `grep "^val_nrmse2:\|^val_r2:\|^pca_ref_nrmse2:" run.log`.
 If the grep is empty the run crashed — `tail -n 50 run.log` for the traceback.
 
-## Logging (results.tsv, tab-separated, keep untracked)
+## Logging (results.tsv, tab-separated, tracked in git — committed each iteration)
 
 Columns: `commit  val_nrmse2  val_r2  status  description`
 
@@ -102,20 +103,20 @@ c3d4e5f	0.190000	0.810000	discard	tanh activation, worse
 
 ## The loop
 
-LOOP FOREVER:
+LOOP FOREVER (only ever modify `train.py` and `results.tsv`; NEVER `git reset --hard` or
+`git checkout <hash>` — that can revert the frozen harness):
 1. Check git state (branch/commit).
-2. Edit `train.py` with one experimental idea.
-3. `git commit`.
-4. `python train.py > run.log 2>&1` (redirect — do NOT flood context with training output).
-5. `grep "^val_nrmse2:\|^pca_ref_nrmse2:" run.log`.
-6. Empty grep → crashed → `tail -n 50 run.log`, fix if trivial (typo/import), else log `crash`.
-7. Record in `results.tsv`.
-8. Improved (lower val_nrmse2 than the best **kept** experiment so far — the baseline AE if
-   none yet) → keep the commit, advance. This holds even while still **above** PCA: banking
-   every real improvement is what lets the hill-climb ratchet down toward (and past) the bar.
-9. Equal or worse than the best kept so far → `git reset --hard HEAD~1` (undo ONLY this
-   experiment's commit). Never `git reset` to an older commit hash — that can silently revert
-   the frozen harness (prepare.py / program.md).
+2. Edit `train.py` with one experimental idea (do NOT commit yet).
+3. `python train.py > run.log 2>&1` (redirect — do NOT flood context with training output).
+4. `grep "^val_nrmse2:\|^pca_ref_nrmse2:" run.log` (empty → crashed → `tail -n 50 run.log`,
+   fix a trivial bug and rerun once, else treat as a discard with status `crash`).
+5. Append the result row to `results.tsv`.
+6. Commit once, no reset, by comparing this val_nrmse2 to the best **kept** so far (baseline if
+   none) — improvement counts even while still **above** PCA:
+   - **KEEP** (lower): `git add train.py results.tsv && git commit -m "<desc>: keep val=<v>"`.
+   - **DISCARD** (equal/worse/crash): `git checkout -- train.py` (revert ONLY your train.py
+     edit), then `git add results.tsv && git commit -m "<desc>: discard val=<v>"` (log the row,
+     harness untouched).
 
 **PCA is the GOAL to beat, not the keep/discard gate.** Never discard an experiment merely
 because it hasn't beaten PCA yet — compare only against your own best kept result.

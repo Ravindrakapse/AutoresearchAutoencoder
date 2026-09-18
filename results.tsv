@@ -1,0 +1,26 @@
+commit	val_nrmse2	val_r2	status	description
+7e36f64	0.373605	0.626395	keep	frozen-latent-16 base (full-budget verified); ~ties PCA-16 0.3726
+b7ebc05	0.381396	0.618604	discard	PCA pre-reduction D->512 before AE; fewer params but lost nonlinear structure, worse
+999c7b3	0.455270	0.544730	discard	Single hidden [512], no noise, dropout 0.02, no WD, batch 128, LR 5e-3; overfit badly
+b4f25c4	0.368815	0.631185	keep	Larger batch 128 + linearly scaled LR 4e-3; beats PCA-16 (0.3726)
+a7f9381	0.367737	0.632263	keep	Remove weight decay (1e-5→0); dropout+noise already regularize
+6cd2bf0	0.383057	0.616943	discard	Reduce dropout 0.1→0.05; less regularization hurt, noise alone insufficient
+a3a282d	0.358846	0.641154	keep	Tied decoder weights (transposed encoder); halves params ~5.3M→~2.7M, reduces overfitting
+9bd27fe	0.361562	0.638438	discard	Reduce noise 0.3→0.15; tied weights already regularize — slightly worse
+37a2e10	0.357228	0.642772	keep	PCA pre-reduction D→256 + single hidden [128]; 35K params, 3531 epochs, new best
+c0552a3	0.357326	0.642674	discard	Widen hidden [128]->[256]; 71K params, 3530 epochs, slightly worse (no benefit from extra capacity)
+0c8a5ef	0.357160	0.642840	keep	Remove denoising noise (0.3→0.0) in PCA space; tied weights+PCA pre-reduction regularize sufficiently
+c473091	0.358573	0.641427	discard	Reduce dropout 0.1→0.02; tied weights+PCA already regularize — slightly worse
+5cd79ab	0.357096	0.642904	keep	Orthogonal init for encoder linear layers; tied-weight W^T W ≈ I preserves norms
+3127fae	0.363066	0.636934	discard	Mixup augmentation (alpha=0.2): interpolate training pairs; hurt — off-manifold targets worse
+1c1cbbf	0.356887	0.643113	keep	Reduce PCA pre-reduction 256→128; fewer params, more epochs, new best
+d8b7458	0.357190	0.642810	discard	Gradient clipping max_norm=1.0; slightly worse — gradients already stable
+f25696d	0.356638	0.643362	keep	EMA (decay=0.998) replaces SWA; smoothed weights from epoch 0, new best
+c9da0c5	0.359074	0.640926	discard	Reduce PCA pre-reduction 128→64; too few input dims, lost nonlinear structure
+6dbf776	0.356250	0.643750	keep	Schedule tuning: warmup 5%→10%, LR floor 1e-5→1e-6; better basin + finer convergence
+3adb3bb	0.356934	0.643066	discard	Dropout annealing (0.1→0.0 linearly over training); slightly worse — constant dropout better here
+a6515f6	0.358873	0.641127	discard	Two-layer funnel encoder [128, 64]; depth hurts at dim-16 too — worse than single [128]
+dbd3e46	0.357086	0.642914	discard	Untie bottleneck decoder layer (independent 16→128 weight); +2K params, slightly worse — tied constraint helps regularize
+d5e035c	0.356398	0.643602	discard	Larger batch (128→256) + linearly scaled LR (4e-3→8e-3); slightly worse — batch 128 already optimal here
+5194a5d	0.492650	0.507350	discard	PCA component whitening (unit-variance normalization before AE); model wasted capacity on low-variance components, much worse
+b49c438	0.356998	0.643002	discard	Bottleneck BatchNorm on 16-dim latent code; slight regularization overhead, worse than best
