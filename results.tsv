@@ -64,3 +64,4 @@ pending	0.357964	0.642036	discard	Ghost BatchNorm (virtual_batch_size=32); noisi
 pending	0.355610	0.644390	discard	Denoising noise annealing (std 0.1→0 linearly over training); even annealed noise hurts — tied weights+PCA+EMA already regularize sufficiently
 pending	0.355060	0.644940	discard	Latent code L2 regularization (CODE_REG=1e-4 on z.pow(2).mean()); soft bottleneck constraint slightly worse — codes already well-constrained by tied weights
 pending	0.356380	0.643620	discard	Curriculum learning (easy-first by PCA-16 residual norm, 40%→100% over 85% of training); structured ordering hurt — random sampling provides better gradient diversity
+pending	0.355429	0.644571	discard	Focal MSE loss (gamma=0.5): weight samples by MSE^gamma to emphasize hard examples; slight overhead, didn't improve — uniform weighting already optimal
