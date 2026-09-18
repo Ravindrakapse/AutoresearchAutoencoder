@@ -28,3 +28,4 @@ pending	0.356945	0.643055	discard	Soft orthogonality reg (1e-3) on encoder weigh
 pending	0.358171	0.641829	discard	Widen hidden [128]->[256] with PCA_PRE_DIM=128; 38K params, extra capacity doesn't help at dim-16
 pending	0.794265	0.205735	discard	Gradient centralization on weight matrices; severely disrupted tied-weight training dynamics
 pending	0.359327	0.640673	discard	Pre-bottleneck residual (h+x in enc, h+r in dec); disrupted BN scale + tied-weight dynamics, worse
+pending	0.358222	0.641778	discard	EMA decay 0.998→0.999 (wider averaging window); included too-early params, worse
