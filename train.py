@@ -30,7 +30,8 @@ import prepare
 # Hyperparameters (edit these directly)
 # ---------------------------------------------------------------------------
 
-LATENT_DIM = 16
+LATENT_DIM = prepare.LATENT_DIM   # FROZEN in prepare.py (=16). Do NOT hardcode a different value:
+                                  # evaluate_ae asserts the code width equals prepare.LATENT_DIM.
 HIDDEN = [256, 64]      # encoder widths; decoder mirrors. bottleneck is always LATENT_DIM.
 ACT = "silu"            # relu | gelu | tanh | silu
 DROPOUT = 0.1
@@ -148,7 +149,7 @@ def decode_fn(Z):
     model.eval()
     return model.decode(torch.from_numpy(np.asarray(Z, np.float32)).to(device)).cpu().numpy()
 
-val_nrmse2, val_r2 = prepare.evaluate_ae(encode_fn, decode_fn, LATENT_DIM, "val")
+val_nrmse2, val_r2 = prepare.evaluate_ae(encode_fn, decode_fn, "val")
 
 # PCA reference at the SAME latent dim (fair linear bar).
 Yc = Ytr - Ytr.mean(axis=0)

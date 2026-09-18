@@ -37,6 +37,12 @@ WEEKLY_GLOB = os.path.join(HERE, "..", "OLR_data", "weekly_olr", "era5_olr_weekl
 TIME_BUDGET = 120.0   # training wall-clock budget in seconds (excludes startup/eval)
 SEED = 42
 
+# FROZEN bottleneck size. The whole research question is "nonlinear AE vs linear PCA at a
+# fixed, small latent dim". This lives here (not in train.py) so it CANNOT be changed by an
+# experiment: increasing the latent dim trivially lowers reconstruction error and is not a
+# real improvement. evaluate_ae asserts the encoder outputs exactly this many numbers.
+LATENT_DIM = 16
+
 # Temporal block split (no leakage — OLR is strongly autocorrelated, never split randomly).
 TRAIN_FRAC = 0.70
 VAL_FRAC = 0.15       # test = remaining 0.15, held out, touched only for final reporting
@@ -158,28 +164,30 @@ def evaluate_recon(reconstruct_fn, split="val"):
     return float(nrmse2), float(1.0 - nrmse2)
 
 
-def evaluate_ae(encode_fn, decode_fn, latent_dim, split="val"):
+def evaluate_ae(encode_fn, decode_fn, split="val"):
     """
-    STRICT autoencoder metric — the fair way to compare against PCA at a fixed latent dim.
+    STRICT autoencoder metric — the fair way to compare against PCA at the FROZEN latent dim.
 
-    encode_fn: (n, D) Y  -> (n, latent_dim) code
-    decode_fn: (n, latent_dim) code -> (n, D) Yhat
+    encode_fn: (n, D) Y  -> (n, LATENT_DIM) code
+    decode_fn: (n, LATENT_DIM) code -> (n, D) Yhat
 
-    The reconstruction is forced to pass through a single code of EXACTLY `latent_dim`
-    numbers: decode_fn only ever sees the code, never the input, so no skip/residual path
-    can widen the effective bottleneck. The code width is asserted, so an experiment cannot
-    silently inflate the latent dimension (e.g. by adding a parallel linear skip) and still
-    call itself latent_dim. This keeps "AE vs PCA at latent k" an honest comparison.
+    The reconstruction is forced to pass through a single code of EXACTLY LATENT_DIM numbers
+    (the frozen constant above): decode_fn only ever sees the code, never the input, so no
+    skip/residual path can widen the effective bottleneck; and the code width is asserted
+    against LATENT_DIM, so an experiment cannot inflate the latent dimension (via a parallel
+    skip OR by declaring a bigger latent) to trivially lower the error. This keeps "AE vs PCA
+    at latent LATENT_DIM" an honest, fixed comparison.
 
     Returns (nrmse2, r2) — same area-weighted metric as evaluate_recon.
     """
     Y = np.asarray(get_split(split), dtype=np.float64)
     Z = np.asarray(encode_fn(Y.astype(np.float32)))
     assert Z.ndim == 2 and Z.shape[0] == Y.shape[0], \
-        f"encode_fn must return (n, latent_dim); got {Z.shape}"
-    assert Z.shape[1] == latent_dim, (
-        f"code width {Z.shape[1]} != declared latent_dim {latent_dim}. The bottleneck must be "
-        f"exactly latent_dim numbers — no extra/skip/parallel dimensions."
+        f"encode_fn must return (n, LATENT_DIM); got {Z.shape}"
+    assert Z.shape[1] == LATENT_DIM, (
+        f"code width {Z.shape[1]} != frozen LATENT_DIM {LATENT_DIM}. The latent dimension is "
+        f"fixed in prepare.py and must not be changed; the encoder must output exactly "
+        f"LATENT_DIM numbers — no extra/skip/parallel dimensions, no larger latent."
     )
     Yhat = np.asarray(decode_fn(Z.astype(np.float32)), dtype=np.float64)
     assert Yhat.shape == Y.shape, f"decode_fn shape {Yhat.shape} != {Y.shape}"

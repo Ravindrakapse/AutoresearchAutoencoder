@@ -39,12 +39,15 @@ normalization, dropout, optimizer, LR schedule, batch size, regularization, weig
 - Change the metric or the split (both live in `prepare.py`; `baselines.py` only reports them).
 - Change what data is used or how val/test are defined.
 - Add heavyweight dependencies. numpy + torch + xarray only.
-- **Inflate the bottleneck.** The model MUST be a single encoder → exactly `LATENT_DIM` numbers
-  → decoder, scored via `prepare.evaluate_ae(encode, decode, LATENT_DIM)`. No skip / residual /
-  parallel path from the input to the output (that smuggles in extra latent capacity and makes
-  the PCA-at-LATENT_DIM comparison meaningless). `evaluate_ae` asserts the code width, so this
-  fails loudly. You MAY change `LATENT_DIM` itself — but then you are compared to PCA at that
-  same size. The whole point is nonlinear-vs-linear at an **equal, honest** bottleneck.
+- **Inflate the bottleneck.** `LATENT_DIM` is **FROZEN in prepare.py (=16)** — you may NOT
+  change it (not in train.py, not anywhere). The whole research question is nonlinear AE vs
+  linear PCA at this ONE fixed, small latent size; a bigger latent trivially lowers error and
+  is not a real result. The model MUST be a single encoder → exactly `prepare.LATENT_DIM`
+  numbers → decoder, scored via `prepare.evaluate_ae(encode, decode)`. No skip / residual /
+  parallel path from the input to the output. `evaluate_ae` asserts the encoder outputs exactly
+  `prepare.LATENT_DIM`, so inflating the latent (a bigger code OR a skip) crashes the run.
+  A PCA pre-reduction of the *input* is allowed only if the code still passes through exactly
+  LATENT_DIM and the reconstruction is scored in full space (it will not beat PCA that way).
 
 **Fixed time budget**: `train.py` trains for `prepare.TIME_BUDGET` seconds (wall clock), so
 you never optimize for speed — a bigger/better model in the same budget is a fair win. If a
