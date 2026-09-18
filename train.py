@@ -133,6 +133,10 @@ class AE(nn.Module):
 
 
 model = AE(D_eff, LATENT_DIM, HIDDEN, ACT, DROPOUT, BATCH_NORM).to(device)
+# Orthogonal init for encoder linear layers (helps tied-weight regime: W^T W ≈ I)
+for m in model.encoder:
+    if isinstance(m, nn.Linear):
+        nn.init.orthogonal_(m.weight)
 num_params = sum(p.numel() for p in model.parameters())
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
 loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical space
