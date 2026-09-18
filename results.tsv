@@ -59,3 +59,4 @@ pending	0.355964	0.644036	discard	Decoder code MLP (Linear 16→16 + SiLU before
 pending	0.355915	0.644085	discard	Cosine warm restarts (2 cycles) instead of single cosine decay; LR oscillation disrupted EMA convergence, slightly worse
 pending	0.357178	0.642822	discard	Smaller batch size (128→64); noisier gradients and fewer epochs outweighed extra optimizer steps, worse
 pending	0.355594	0.644406	discard	Learned per-latent-dim scaling (16 log_scale params, zero-init exp scaling after encoder); optimizer already handles scale via weight matrix, no benefit
+pending	0.359524	0.640476	discard	Input component dropout (p=0.03) as denoising regularization; zeroing random PCA dims hurt reconstruction, worse than no corruption
