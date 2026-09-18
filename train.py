@@ -138,7 +138,7 @@ for m in model.encoder:
     if isinstance(m, nn.Linear):
         nn.init.orthogonal_(m.weight)
 num_params = sum(p.numel() for p in model.parameters())
-opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
+opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY, betas=(0.9, 0.9999))
 loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical space
 
 # ---------------------------------------------------------------------------
