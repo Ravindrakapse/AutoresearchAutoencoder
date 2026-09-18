@@ -30,3 +30,4 @@ pending	0.794265	0.205735	discard	Gradient centralization on weight matrices; se
 pending	0.359327	0.640673	discard	Pre-bottleneck residual (h+x in enc, h+r in dec); disrupted BN scale + tied-weight dynamics, worse
 pending	0.358222	0.641778	discard	EMA decay 0.998→0.999 (wider averaging window); included too-early params, worse
 pending	0.356683	0.643317	discard	Latent-skip projection (zero-init Linear 16→128 added to first decoder hidden); marginal overhead, slightly worse
+pending	0.356941	0.643059	discard	Latent noise injection (std=0.1) on 16-dim code during training; noise regularization hurt reconstruction
