@@ -24,6 +24,7 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 import prepare
 
@@ -61,32 +62,54 @@ print(f"device={device}  train={Xtr.shape}  D={D}  latent={LATENT_DIM}")
 _ACTS = {"relu": nn.ReLU, "gelu": nn.GELU, "tanh": nn.Tanh, "silu": nn.SiLU}
 
 
+class TiedLinear(nn.Module):
+    """Decoder linear layer sharing (transposed) weight with an encoder layer."""
+    def __init__(self, tied_to):
+        super().__init__()
+        self._ref = [tied_to]  # list avoids registering as submodule
+        self.bias = nn.Parameter(torch.zeros(tied_to.in_features))
+
+    def forward(self, x):
+        return F.linear(x, self._ref[0].weight.t(), self.bias)
+
+
 class AE(nn.Module):
-    """Strict autoencoder: encoder -> LATENT_DIM code -> decoder. No input->output skip."""
+    """Strict autoencoder: encoder -> LATENT_DIM code -> decoder (tied weights). No input->output skip."""
 
     def __init__(self, D, latent, hidden, act, dropout, batch_norm):
         super().__init__()
         Act = _ACTS[act]
 
-        def block(i, o):
-            layers = [nn.Linear(i, o)]
-            if batch_norm:
-                layers.append(nn.BatchNorm1d(o))
-            layers.append(Act())
-            if dropout > 0:
-                layers.append(nn.Dropout(dropout))
-            return layers
-
-        enc, d = [], D
+        # --- Encoder ---
+        enc_linears = []
+        enc = []
+        d = D
         for h in hidden:
-            enc += block(d, h); d = h
-        enc += [nn.Linear(d, latent)]           # -> exactly latent numbers
+            lin = nn.Linear(d, h)
+            enc_linears.append(lin)
+            enc.append(lin)
+            if batch_norm:
+                enc.append(nn.BatchNorm1d(h))
+            enc.append(Act())
+            if dropout > 0:
+                enc.append(nn.Dropout(dropout))
+            d = h
+        final_enc = nn.Linear(d, latent)
+        enc_linears.append(final_enc)
+        enc.append(final_enc)
         self.encoder = nn.Sequential(*enc)
 
-        dec, d = [], latent
-        for h in reversed(hidden):
-            dec += block(d, h); d = h
-        dec += [nn.Linear(d, D)]
+        # --- Decoder (tied weights = encoder weights transposed) ---
+        dec = []
+        reversed_lins = list(reversed(enc_linears))
+        for lin in reversed_lins[:-1]:
+            dec.append(TiedLinear(lin))
+            if batch_norm:
+                dec.append(nn.BatchNorm1d(lin.in_features))
+            dec.append(Act())
+            if dropout > 0:
+                dec.append(nn.Dropout(dropout))
+        dec.append(TiedLinear(reversed_lins[-1]))
         self.decoder = nn.Sequential(*dec)
 
     def encode(self, x):
