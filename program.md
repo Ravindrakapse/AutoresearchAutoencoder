@@ -30,8 +30,9 @@ it otherwise, and repeat — indefinitely.
 
 ## Rules
 
-**You CAN**: edit `train.py` freely — architecture, latent dim, depth/width, activations,
-normalization, dropout, optimizer, LR schedule, batch size, regularization, weight init, etc.
+**You CAN**: edit `train.py` freely — architecture, depth/width, activations, normalization,
+dropout, optimizer, LR schedule, batch size, regularization, weight init, etc. (NOT the latent
+dim — it is frozen in prepare.py, see below.)
 
 **You CANNOT**:
 - Modify `prepare.py` — it holds the fixed split, preprocessing, TIME_BUDGET, and the metrics
@@ -39,12 +40,18 @@ normalization, dropout, optimizer, LR schedule, batch size, regularization, weig
 - Change the metric or the split (both live in `prepare.py`; `baselines.py` only reports them).
 - Change what data is used or how val/test are defined.
 - Add heavyweight dependencies. numpy + torch + xarray only.
-- **Inflate the bottleneck.** The model MUST be a single encoder → exactly `LATENT_DIM` numbers
-  → decoder, scored via `prepare.evaluate_ae(encode, decode, LATENT_DIM)`. No skip / residual /
-  parallel path from the input to the output (that smuggles in extra latent capacity and makes
-  the PCA-at-LATENT_DIM comparison meaningless). `evaluate_ae` asserts the code width, so this
-  fails loudly. You MAY change `LATENT_DIM` itself — but then you are compared to PCA at that
-  same size. The whole point is nonlinear-vs-linear at an **equal, honest** bottleneck.
+- **Inflate the bottleneck.** `LATENT_DIM` is **FROZEN in prepare.py (=16)** — you may NOT
+  change it anywhere. The research question is nonlinear AE vs linear PCA at this ONE fixed,
+  small latent; a bigger latent trivially lowers error and is not a result. The model MUST be a
+  single encoder → exactly `prepare.LATENT_DIM` numbers → decoder, scored via
+  `prepare.evaluate_ae(encode, decode)`. No skip / residual / parallel path from input to
+  output. `evaluate_ae` asserts the encoder output width == `prepare.LATENT_DIM`, so inflating
+  the latent (bigger code OR a skip) crashes the run. A PCA pre-reduction of the *input* is fine
+  as long as the code still passes through exactly LATENT_DIM and reconstruction is scored in
+  full space.
+- **Touch the harness via git.** `prepare.py` and `program.md` are fixed. NEVER `git reset`,
+  `checkout`, or `revert` to a commit that changes them. On a discard, undo ONLY your own
+  experiment commit with `git reset --hard HEAD~1` (see the loop) — never jump to an older hash.
 
 **Fixed time budget**: `train.py` trains for `prepare.TIME_BUDGET` seconds (wall clock), so
 you never optimize for speed — a bigger/better model in the same budget is a fair win. If a
@@ -106,7 +113,9 @@ LOOP FOREVER:
 8. Improved (lower val_nrmse2 than the best **kept** experiment so far — the baseline AE if
    none yet) → keep the commit, advance. This holds even while still **above** PCA: banking
    every real improvement is what lets the hill-climb ratchet down toward (and past) the bar.
-9. Equal or worse than the best kept so far → `git reset --hard` back to the previous kept commit.
+9. Equal or worse than the best kept so far → `git reset --hard HEAD~1` (undo ONLY this
+   experiment's commit). Never `git reset` to an older commit hash — that can silently revert
+   the frozen harness (prepare.py / program.md).
 
 **PCA is the GOAL to beat, not the keep/discard gate.** Never discard an experiment merely
 because it hasn't beaten PCA yet — compare only against your own best kept result.

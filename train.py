@@ -7,12 +7,13 @@ No skip / residual / parallel path from the input to the output — that would w
 bottleneck and make the comparison against PCA at LATENT_DIM dishonest. evaluate_ae asserts the
 code width, so such tricks fail loudly instead of silently inflating the latent dimension.
 
-Everything else is fair game: encoder/decoder depth & width, activations, normalization, dropout,
-noise, optimizer, LR schedule, batch size, regularization, weight init, latent size itself
-(but then it is compared to PCA at that same size). Must run within prepare.TIME_BUDGET seconds.
+The latent dim is FROZEN in prepare.py (LATENT_DIM=16) and must NOT be changed here — a bigger
+latent trivially lowers error and is not a real result. Everything else is fair game:
+encoder/decoder depth & width, activations, normalization, dropout, noise, optimizer, LR
+schedule, batch size, regularization, weight init. Must run within prepare.TIME_BUDGET seconds.
 
-Metric: prepare.evaluate_ae(encode, decode, LATENT_DIM) on "val" = area-weighted NRMSE^2 = 1-R^2,
-lower better, directly comparable to PCA at the SAME LATENT_DIM.
+Metric: prepare.evaluate_ae(encode, decode) on "val" = area-weighted NRMSE^2 = 1-R^2,
+lower better, directly comparable to PCA at the frozen prepare.LATENT_DIM.
 
 Run:  python train.py > run.log 2>&1   then   grep "^val_nrmse2:" run.log
 """
@@ -30,7 +31,8 @@ import prepare
 # Hyperparameters (edit these directly)
 # ---------------------------------------------------------------------------
 
-LATENT_DIM = 16
+LATENT_DIM = prepare.LATENT_DIM   # FROZEN in prepare.py (=16). Do NOT hardcode another value:
+                                  # evaluate_ae asserts the code width equals prepare.LATENT_DIM.
 HIDDEN = [256, 64]      # encoder widths; decoder mirrors. bottleneck is always LATENT_DIM.
 ACT = "silu"            # relu | gelu | tanh | silu
 DROPOUT = 0.1
@@ -41,6 +43,7 @@ LR = 1e-3
 WEIGHT_DECAY = 1e-5
 WARMUP_FRAC = 0.05      # fraction of budget for linear LR warmup
 ETA_MIN = 1e-5          # cosine annealing floor
+SWA_START_FRAC = 0.75   # start averaging weights after this fraction of training
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -108,6 +111,8 @@ loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical 
 n = Xtr.shape[0]
 t_train0 = time.time()
 epoch = 0
+swa_params = None   # SWA: running equal-weight average of parameters
+swa_n = 0
 while True:
     progress = (time.time() - t_train0) / prepare.TIME_BUDGET
     if progress >= 1.0:
@@ -131,8 +136,29 @@ while True:
         loss = loss_fn(model(xb_in), xb)
         loss.backward()
         opt.step()
+    # SWA: accumulate equal-weight parameter average over late training
+    if progress >= SWA_START_FRAC:
+        if swa_params is None:
+            swa_params = [p.data.clone() for p in model.parameters()]
+            swa_n = 1
+        else:
+            swa_n += 1
+            for sp, p in zip(swa_params, model.parameters()):
+                sp += (p.data - sp) / swa_n
     epoch += 1
 training_seconds = time.time() - t_train0
+
+# SWA: load averaged weights and refresh BN running statistics
+if swa_params is not None:
+    for sp, p in zip(swa_params, model.parameters()):
+        p.data.copy_(sp)
+    model.train()
+    with torch.no_grad():
+        for i in range(0, n, BATCH_SIZE):
+            xb = Xtr[i:i + BATCH_SIZE]
+            if xb.shape[0] >= 2:
+                model(xb)
+    print(f"SWA: averaged {swa_n} checkpoints")
 
 # ---------------------------------------------------------------------------
 # Evaluate with the frozen STRICT metric (forces reconstruction through the code only)
@@ -148,7 +174,7 @@ def decode_fn(Z):
     model.eval()
     return model.decode(torch.from_numpy(np.asarray(Z, np.float32)).to(device)).cpu().numpy()
 
-val_nrmse2, val_r2 = prepare.evaluate_ae(encode_fn, decode_fn, LATENT_DIM, "val")
+val_nrmse2, val_r2 = prepare.evaluate_ae(encode_fn, decode_fn, "val")
 
 # PCA reference at the SAME latent dim (fair linear bar).
 Yc = Ytr - Ytr.mean(axis=0)
