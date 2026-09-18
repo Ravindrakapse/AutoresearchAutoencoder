@@ -35,7 +35,7 @@ import prepare
 LATENT_DIM = prepare.LATENT_DIM   # FROZEN in prepare.py (=16). Do NOT hardcode another value:
                                   # evaluate_ae asserts the code width equals prepare.LATENT_DIM.
 HIDDEN = [128]           # encoder widths in PCA-reduced space; decoder mirrors.
-PCA_PRE_DIM = 256        # fixed PCA pre-reduction: D -> PCA_PRE_DIM before the learnable AE
+PCA_PRE_DIM = 128        # fixed PCA pre-reduction: D -> PCA_PRE_DIM before the learnable AE
 ACT = "silu"            # relu | gelu | tanh | silu
 DROPOUT = 0.1
 BATCH_NORM = True
