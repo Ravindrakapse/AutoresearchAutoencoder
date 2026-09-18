@@ -57,3 +57,4 @@ pending	0.356040	0.643960	discard	PCA_PRE_DIM 128→160; more input variance but
 pending	0.355779	0.644221	discard	Exponential LR decay instead of cosine annealing; log-linear decay spends more time at mid-LR, slightly worse
 pending	0.355964	0.644036	discard	Decoder code MLP (Linear 16→16 + SiLU before tied decoder); added nonlinear code unfolding, +272 params, slightly worse
 pending	0.355915	0.644085	discard	Cosine warm restarts (2 cycles) instead of single cosine decay; LR oscillation disrupted EMA convergence, slightly worse
+pending	0.357178	0.642822	discard	Smaller batch size (128→64); noisier gradients and fewer epochs outweighed extra optimizer steps, worse
