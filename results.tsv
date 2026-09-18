@@ -52,3 +52,4 @@ pending	0.356306	0.643694	discard	Progressive dropout annealing (0.05→0.15 ove
 pending	0.355589	0.644411	discard	Post-activation BN (Linear→SiLU→BN→Dropout instead of Linear→BN→SiLU→Dropout); slightly worse — pre-activation BN better for tied weights
 pending	0.355428	0.644572	discard	Disable dropout during BN stat refresh (eval-mode Dropout while BN trains); minor mismatch, no improvement
 pending	0.355611	0.644389	discard	Increase LR 4e-3→5e-3; slightly too aggressive, EMA smoothing insufficient to compensate
+pending	0.355196	0.644804	discard	Per-batch LR scheduling (update LR every batch instead of per-epoch); marginal overhead, no improvement — per-epoch granularity already sufficient
