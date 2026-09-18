@@ -182,6 +182,11 @@ training_seconds = time.time() - t_train0
 # EMA: load averaged weights and refresh BN running statistics
 for ep, p in zip(ema_params, model.parameters()):
     p.data.copy_(ep)
+# Reset BN running stats and use cumulative moving average for accurate refresh
+for m in model.modules():
+    if isinstance(m, nn.BatchNorm1d):
+        m.reset_running_stats()
+        m.momentum = None  # cumulative average: each batch weighted equally
 model.train()
 with torch.no_grad():
     for i in range(0, n, BATCH_SIZE):
