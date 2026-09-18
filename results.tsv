@@ -65,3 +65,4 @@ pending	0.355610	0.644390	discard	Denoising noise annealing (std 0.1→0 linearl
 pending	0.355060	0.644940	discard	Latent code L2 regularization (CODE_REG=1e-4 on z.pow(2).mean()); soft bottleneck constraint slightly worse — codes already well-constrained by tied weights
 pending	0.356380	0.643620	discard	Curriculum learning (easy-first by PCA-16 residual norm, 40%→100% over 85% of training); structured ordering hurt — random sampling provides better gradient diversity
 pending	0.355429	0.644571	discard	Focal MSE loss (gamma=0.5): weight samples by MSE^gamma to emphasize hard examples; slight overhead, didn't improve — uniform weighting already optimal
+pending	0.356392	0.643608	discard	Full-dataset BN stat refresh (single forward pass vs mini-batch cumulative); exact population stats slightly worse — mini-batch cumulative averaging provides beneficial smoothing
