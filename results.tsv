@@ -69,3 +69,4 @@ pending	0.356392	0.643608	discard	Full-dataset BN stat refresh (single forward p
 pending	0.355263	0.644737	discard	Increase warmup 10%→15%; longer exploration phase before cosine decay, slightly worse — 10% warmup already optimal
 pending	0.354605	0.645395	keep	Adam beta2=0.9999 (up from 0.999); more stable second-moment estimate for smoother late-training convergence, new best
 pending	0.355142	0.644858	discard	Reduce dropout 0.1→0.05; model has many regularizers (tied weights, PCA pre, EMA, BN) but less dropout still slightly worse
+pending	0.355609	0.644391	discard	Adam beta1=0.95 (higher momentum); too much momentum smoothed out useful gradient signal, slightly worse
