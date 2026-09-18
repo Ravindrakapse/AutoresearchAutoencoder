@@ -35,3 +35,4 @@ pending	0.356376	0.643624	discard	EMA decay annealing 0.99→0.999 over training
 pending	0.357944	0.642056	discard	Learnable per-component scaling (log_scale param on PCA dims); extra freedom didn't help, slightly worse
 pending	0.362541	0.637459	discard	SAM (Sharpness-Aware Minimization) rho=0.05; flatter minima but halved epochs (1500 vs ~3500), worse
 pending	0.357373	0.642627	discard	Asymmetric dropout (enc=0.1, dec=0.0); removing decoder dropout slightly worse — decoder dropout helps regularize tied weights
+pending	0.357420	0.642580	discard	Latent decorrelation reg (lambda=0.005 off-diag correlation penalty); slight overhead, no benefit — latent dims already sufficiently decorrelated
