@@ -26,3 +26,4 @@ d5e035c	0.356398	0.643602	discard	Larger batch (128→256) + linearly scaled LR 
 b49c438	0.356998	0.643002	discard	Bottleneck BatchNorm on 16-dim latent code; slight regularization overhead, worse than best
 pending	0.356945	0.643055	discard	Soft orthogonality reg (1e-3) on encoder weights; small overhead, slightly worse
 pending	0.358171	0.641829	discard	Widen hidden [128]->[256] with PCA_PRE_DIM=128; 38K params, extra capacity doesn't help at dim-16
+pending	0.794265	0.205735	discard	Gradient centralization on weight matrices; severely disrupted tied-weight training dynamics
