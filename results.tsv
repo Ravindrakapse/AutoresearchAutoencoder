@@ -38,3 +38,4 @@ pending	0.357373	0.642627	discard	Asymmetric dropout (enc=0.1, dec=0.0); removin
 pending	0.357420	0.642580	discard	Latent decorrelation reg (lambda=0.005 off-diag correlation penalty); slight overhead, no benefit — latent dims already sufficiently decorrelated
 pending	0.356487	0.643513	discard	1-cycle LR schedule (30% cosine ramp-up, div=25); different optimization trajectory but slightly worse than linear warmup+cosine
 pending	0.356347	0.643653	discard	Mish activation (x*tanh(softplus(x))) instead of SiLU; smoother but no improvement over SiLU
+pending	0.357249	0.642751	discard	NAdam optimizer (Nesterov-accelerated Adam) instead of AdamW; Nesterov look-ahead didn't help, slightly worse
