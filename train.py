@@ -34,7 +34,8 @@ import prepare
 
 LATENT_DIM = prepare.LATENT_DIM   # FROZEN in prepare.py (=16). Do NOT hardcode another value:
                                   # evaluate_ae asserts the code width equals prepare.LATENT_DIM.
-HIDDEN = [256, 64]      # encoder widths; decoder mirrors. bottleneck is always LATENT_DIM.
+HIDDEN = [128]           # encoder widths in PCA-reduced space; decoder mirrors.
+PCA_PRE_DIM = 256        # fixed PCA pre-reduction: D -> PCA_PRE_DIM before the learnable AE
 ACT = "silu"            # relu | gelu | tanh | silu
 DROPOUT = 0.1
 BATCH_NORM = True
@@ -58,6 +59,15 @@ Ytr = prepare.get_split("train")            # (n, D) float32, centered + area-we
 D = Ytr.shape[1]
 Xtr = torch.from_numpy(Ytr).to(device)
 print(f"device={device}  train={Xtr.shape}  D={D}  latent={LATENT_DIM}")
+
+# --- PCA pre-reduction: D -> PCA_PRE_DIM (fixed, not learned) ---
+Ytr_np = Xtr.cpu().numpy()
+Ytr_c = Ytr_np - Ytr_np.mean(axis=0)
+_, _, VT_pre = np.linalg.svd(Ytr_c, full_matrices=False)
+Vk_pre = torch.from_numpy(VT_pre[:PCA_PRE_DIM].astype(np.float32)).to(device)  # (PCA_PRE_DIM, D)
+Xtr = Xtr @ Vk_pre.T  # (n, PCA_PRE_DIM)
+D_eff = PCA_PRE_DIM
+print(f"PCA pre-reduction: {D} -> {D_eff}")
 
 _ACTS = {"relu": nn.ReLU, "gelu": nn.GELU, "tanh": nn.Tanh, "silu": nn.SiLU}
 
@@ -122,7 +132,7 @@ class AE(nn.Module):
         return self.decode(self.encode(x))      # reconstruction goes ONLY through the code
 
 
-model = AE(D, LATENT_DIM, HIDDEN, ACT, DROPOUT, BATCH_NORM).to(device)
+model = AE(D_eff, LATENT_DIM, HIDDEN, ACT, DROPOUT, BATCH_NORM).to(device)
 num_params = sum(p.numel() for p in model.parameters())
 opt = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=WEIGHT_DECAY)
 loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical space
@@ -190,12 +200,14 @@ if swa_params is not None:
 @torch.no_grad()
 def encode_fn(Y):
     model.eval()
-    return model.encode(torch.from_numpy(np.asarray(Y, np.float32)).to(device)).cpu().numpy()
+    Yt = torch.from_numpy(np.asarray(Y, np.float32)).to(device)
+    return model.encode(Yt @ Vk_pre.T).cpu().numpy()
 
 @torch.no_grad()
 def decode_fn(Z):
     model.eval()
-    return model.decode(torch.from_numpy(np.asarray(Z, np.float32)).to(device)).cpu().numpy()
+    Zt = torch.from_numpy(np.asarray(Z, np.float32)).to(device)
+    return (model.decode(Zt) @ Vk_pre).cpu().numpy()
 
 val_nrmse2, val_r2 = prepare.evaluate_ae(encode_fn, decode_fn, "val")
 
