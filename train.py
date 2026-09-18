@@ -37,7 +37,8 @@ LATENT_DIM = prepare.LATENT_DIM   # FROZEN in prepare.py (=16). Do NOT hardcode 
 HIDDEN = [128]           # encoder widths in PCA-reduced space; decoder mirrors.
 PCA_PRE_DIM = 128        # fixed PCA pre-reduction: D -> PCA_PRE_DIM before the learnable AE
 ACT = "silu"            # relu | gelu | tanh | silu
-DROPOUT = 0.1
+DROPOUT_ENC = 0.0          # encoder dropout: 0 -> clean codes
+DROPOUT_DEC = 0.1          # decoder dropout: regularises tied-weight reconstruction
 BATCH_NORM = True
 NOISE_STD = 0.0         # no noise: in PCA space, uniform noise disproportionately corrupts low-variance components
 BATCH_SIZE = 128
@@ -86,7 +87,7 @@ class TiedLinear(nn.Module):
 class AE(nn.Module):
     """Strict autoencoder: encoder -> LATENT_DIM code -> decoder (tied weights). No input->output skip."""
 
-    def __init__(self, D, latent, hidden, act, dropout, batch_norm):
+    def __init__(self, D, latent, hidden, act, dropout_enc, dropout_dec, batch_norm):
         super().__init__()
         Act = _ACTS[act]
 
@@ -101,8 +102,8 @@ class AE(nn.Module):
             if batch_norm:
                 enc.append(nn.BatchNorm1d(h))
             enc.append(Act())
-            if dropout > 0:
-                enc.append(nn.Dropout(dropout))
+            if dropout_enc > 0:
+                enc.append(nn.Dropout(dropout_enc))
             d = h
         final_enc = nn.Linear(d, latent)
         enc_linears.append(final_enc)
@@ -117,8 +118,8 @@ class AE(nn.Module):
             if batch_norm:
                 dec.append(nn.BatchNorm1d(lin.in_features))
             dec.append(Act())
-            if dropout > 0:
-                dec.append(nn.Dropout(dropout))
+            if dropout_dec > 0:
+                dec.append(nn.Dropout(dropout_dec))
         dec.append(TiedLinear(reversed_lins[-1]))
         self.decoder = nn.Sequential(*dec)
 
@@ -132,7 +133,7 @@ class AE(nn.Module):
         return self.decode(self.encode(x))      # reconstruction goes ONLY through the code
 
 
-model = AE(D_eff, LATENT_DIM, HIDDEN, ACT, DROPOUT, BATCH_NORM).to(device)
+model = AE(D_eff, LATENT_DIM, HIDDEN, ACT, DROPOUT_ENC, DROPOUT_DEC, BATCH_NORM).to(device)
 # Orthogonal init for encoder linear layers (helps tied-weight regime: W^T W ≈ I)
 for m in model.encoder:
     if isinstance(m, nn.Linear):

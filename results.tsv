@@ -79,3 +79,4 @@ pending	0.372715	0.627285	discard	Linear decoder (no BN/Act/Dropout in decoder, 
 pending	0.355909	0.644091	discard	GrokFast gradient filtering (alpha=0.98, lambda=1.0): amplify slow gradient components; gradient amplification disrupted fine convergence, slightly worse
 pending	0.355463	0.644537	discard	Weight perturbation (std=1e-3) on linear weights: grad at θ+ε, update at θ for flat minima; noisy gradients slightly worse than clean, no benefit over EMA smoothing
 pending	0.355212	0.644788	discard	Power cosine LR schedule (exponent=1.5): slower initial decay, sharper late decay; higher LR longer didn't help, slightly worse
+pending	0.353424	0.646576	keep	Asymmetric dropout (enc=0.0, dec=0.1): clean encoder codes, decoder-only dropout regularises tied-weight reconstruction; new best
