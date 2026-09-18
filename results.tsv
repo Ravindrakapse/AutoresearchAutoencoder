@@ -73,3 +73,4 @@ pending	0.355609	0.644391	discard	Adam beta1=0.95 (higher momentum); too much mo
 pending	0.354826	0.645174	discard	SWA (flat averaging last 20%) replacing EMA (decay=0.998); equal-weight averaging underperformed exponential recency bias, slightly worse
 pending	0.355572	0.644428	discard	Reduce LR 4e-3→3.5e-3; lower LR too slow for tied-weight regime even with beta2=0.9999, slightly worse
 pending	0.356124	0.643876	discard	Gaussian dropout (multiplicative noise x*(1+0.1*N(0,1))) replacing binary dropout; smoother noise but weaker regularization than hard zeros, slightly worse
+pending	0.357540	0.642460	discard	PCA-error-weighted MSE loss (upweight samples with high PCA-16 residual energy); biased loss toward hard samples hurt uniform-metric evaluation, worse
