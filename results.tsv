@@ -39,3 +39,4 @@ pending	0.357420	0.642580	discard	Latent decorrelation reg (lambda=0.005 off-dia
 pending	0.356487	0.643513	discard	1-cycle LR schedule (30% cosine ramp-up, div=25); different optimization trajectory but slightly worse than linear warmup+cosine
 pending	0.356347	0.643653	discard	Mish activation (x*tanh(softplus(x))) instead of SiLU; smoother but no improvement over SiLU
 pending	0.357249	0.642751	discard	NAdam optimizer (Nesterov-accelerated Adam) instead of AdamW; Nesterov look-ahead didn't help, slightly worse
+pending	0.357503	0.642497	discard	Learnable Swish activation (x*sigmoid(beta*x), beta trained from 1.0); learned beta diverged from SiLU, slightly worse
