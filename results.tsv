@@ -58,3 +58,4 @@ pending	0.355779	0.644221	discard	Exponential LR decay instead of cosine anneali
 pending	0.355964	0.644036	discard	Decoder code MLP (Linear 16→16 + SiLU before tied decoder); added nonlinear code unfolding, +272 params, slightly worse
 pending	0.355915	0.644085	discard	Cosine warm restarts (2 cycles) instead of single cosine decay; LR oscillation disrupted EMA convergence, slightly worse
 pending	0.357178	0.642822	discard	Smaller batch size (128→64); noisier gradients and fewer epochs outweighed extra optimizer steps, worse
+pending	0.355594	0.644406	discard	Learned per-latent-dim scaling (16 log_scale params, zero-init exp scaling after encoder); optimizer already handles scale via weight matrix, no benefit
