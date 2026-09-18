@@ -44,3 +44,4 @@ pending	0.364724	0.635276	discard	LayerNorm on 16-dim latent code (per-sample no
 pending	0.357375	0.642625	discard	Lookahead optimizer (k=6, alpha=0.5) wrapping AdamW; slow-weight sync disrupted fine optimization trajectory, slightly worse
 pending	0.356787	0.643213	discard	Gradient noise injection (scale=0.01, noise_std=lr*scale); added exploration but EMA already smooths trajectory, slightly worse
 pending	0.357432	0.642568	discard	AMSGrad=True in AdamW; step size monotonicity constraint slightly worse — default Adam adaptive step sizes sufficient
+pending	0.356470	0.643530	discard	Lower Adam beta1 0.9→0.8 (less momentum, more responsive); EMA already smooths trajectory, lower momentum didn't help
