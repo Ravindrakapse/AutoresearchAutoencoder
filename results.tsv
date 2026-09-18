@@ -55,3 +55,4 @@ pending	0.355611	0.644389	discard	Increase LR 4e-3→5e-3; slightly too aggressi
 pending	0.355196	0.644804	discard	Per-batch LR scheduling (update LR every batch instead of per-epoch); marginal overhead, no improvement — per-epoch granularity already sufficient
 pending	0.356040	0.643960	discard	PCA_PRE_DIM 128→160; more input variance but extra low-variance dims didn't help, 23K params, 3413 epochs
 pending	0.355779	0.644221	discard	Exponential LR decay instead of cosine annealing; log-linear decay spends more time at mid-LR, slightly worse
+pending	0.355964	0.644036	discard	Decoder code MLP (Linear 16→16 + SiLU before tied decoder); added nonlinear code unfolding, +272 params, slightly worse
