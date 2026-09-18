@@ -45,7 +45,7 @@ LR = 4e-3
 WEIGHT_DECAY = 0
 WARMUP_FRAC = 0.05      # fraction of budget for linear LR warmup
 ETA_MIN = 1e-5          # cosine annealing floor
-SWA_START_FRAC = 0.75   # start averaging weights after this fraction of training
+EMA_DECAY = 0.998       # exponential moving average decay (per epoch)
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -148,8 +148,8 @@ loss_fn = nn.MSELoss()  # plain MSE in Y space == area-weighted MSE in physical 
 n = Xtr.shape[0]
 t_train0 = time.time()
 epoch = 0
-swa_params = None   # SWA: running equal-weight average of parameters
-swa_n = 0
+# EMA: exponential moving average of parameters (tracks smoothed weights from the start)
+ema_params = [p.data.clone() for p in model.parameters()]
 while True:
     progress = (time.time() - t_train0) / prepare.TIME_BUDGET
     if progress >= 1.0:
@@ -173,29 +173,22 @@ while True:
         loss = loss_fn(model(xb_in), xb)
         loss.backward()
         opt.step()
-    # SWA: accumulate equal-weight parameter average over late training
-    if progress >= SWA_START_FRAC:
-        if swa_params is None:
-            swa_params = [p.data.clone() for p in model.parameters()]
-            swa_n = 1
-        else:
-            swa_n += 1
-            for sp, p in zip(swa_params, model.parameters()):
-                sp += (p.data - sp) / swa_n
+    # EMA: update smoothed parameters (per epoch)
+    for ep, mp in zip(ema_params, model.parameters()):
+        ep.mul_(EMA_DECAY).add_(mp.data, alpha=1 - EMA_DECAY)
     epoch += 1
 training_seconds = time.time() - t_train0
 
-# SWA: load averaged weights and refresh BN running statistics
-if swa_params is not None:
-    for sp, p in zip(swa_params, model.parameters()):
-        p.data.copy_(sp)
-    model.train()
-    with torch.no_grad():
-        for i in range(0, n, BATCH_SIZE):
-            xb = Xtr[i:i + BATCH_SIZE]
-            if xb.shape[0] >= 2:
-                model(xb)
-    print(f"SWA: averaged {swa_n} checkpoints")
+# EMA: load averaged weights and refresh BN running statistics
+for ep, p in zip(ema_params, model.parameters()):
+    p.data.copy_(ep)
+model.train()
+with torch.no_grad():
+    for i in range(0, n, BATCH_SIZE):
+        xb = Xtr[i:i + BATCH_SIZE]
+        if xb.shape[0] >= 2:
+            model(xb)
+print(f"EMA: decay={EMA_DECAY}, {epoch} epoch updates")
 
 # ---------------------------------------------------------------------------
 # Evaluate with the frozen STRICT metric (forces reconstruction through the code only)
