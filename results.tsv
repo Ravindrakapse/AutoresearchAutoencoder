@@ -77,3 +77,4 @@ pending	0.357540	0.642460	discard	PCA-error-weighted MSE loss (upweight samples 
 pending	0.372715	0.627285	discard	Linear decoder (no BN/Act/Dropout in decoder, purely linear tied-weight reconstruction); decoder collapsed to PCA-level — nonlinear decoder IS essential
 
 pending	0.355909	0.644091	discard	GrokFast gradient filtering (alpha=0.98, lambda=1.0): amplify slow gradient components; gradient amplification disrupted fine convergence, slightly worse
+pending	0.355463	0.644537	discard	Weight perturbation (std=1e-3) on linear weights: grad at θ+ε, update at θ for flat minima; noisy gradients slightly worse than clean, no benefit over EMA smoothing
