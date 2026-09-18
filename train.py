@@ -43,8 +43,8 @@ NOISE_STD = 0.0         # no noise: in PCA space, uniform noise disproportionate
 BATCH_SIZE = 128
 LR = 4e-3
 WEIGHT_DECAY = 0
-WARMUP_FRAC = 0.05      # fraction of budget for linear LR warmup
-ETA_MIN = 1e-5          # cosine annealing floor
+WARMUP_FRAC = 0.10      # fraction of budget for linear LR warmup
+ETA_MIN = 1e-6          # cosine annealing floor
 EMA_DECAY = 0.998       # exponential moving average decay (per epoch)
 
 # ---------------------------------------------------------------------------
