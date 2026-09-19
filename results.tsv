@@ -107,3 +107,4 @@ pending	0.354478	0.645522	discard	Bottleneck-only weight decay (WD=1e-4 on Linea
 pending	0.354579	0.645421	discard	Adam beta2=0.99999 (up from 0.9999); second-moment estimates became too stale, couldn't adapt to gradient changes during warm restarts, slightly worse
 pending	0.353408	0.646592	discard	Adaptive EMA decay near restarts (0.99 for 2% window after each restart vs 0.998 elsewhere); softer than full reset but still slightly worse — constant EMA decay optimal
 pending	0.353399	0.646601	discard	Reset Adam optimizer state at warm restart points (clear momentum + second moments); fresh optimizer stats didn't help — stale moments not the bottleneck, slightly worse
+pending	0.353492	0.646508	discard	Shift warm restarts later (70%/85%→75%/90%): more main cosine phase time; slightly worse — 70%/85% timing already optimal
