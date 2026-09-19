@@ -120,3 +120,4 @@ pending	0.353876	0.646124	discard	Partial Adam momentum reset (zero exp_avg, kee
 pending	0.356216	0.643784	discard	Remove decoder BatchNorm (asymmetric normalization: BN in encoder only); decoder BN still important for tied-weight reconstruction, worse despite more epochs (4166 vs ~3500)
 pending	0.354898	0.645102	discard	Dual EMA (0.998+0.9995, weights 0.6/0.4): blend short-term and long-term smoothed weights; long-term EMA included too many early suboptimal weights, worse
 pending	0.353699	0.646301	discard	Cycle consistency loss (alpha=0.01, every 4th batch): MSE(encode(decode(z)),z.detach()) idempotency reg; 3326 epochs (~5% fewer), regularization didn't offset epoch loss
+pending	0.353546	0.646454	discard	SE attention block (reduction=16) in encoder before bottleneck; +2.2K params (21.5K total), 2781 epochs — learned channel gating didn't offset fewer epochs
