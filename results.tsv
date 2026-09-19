@@ -81,3 +81,4 @@ pending	0.355463	0.644537	discard	Weight perturbation (std=1e-3) on linear weigh
 pending	0.355212	0.644788	discard	Power cosine LR schedule (exponent=1.5): slower initial decay, sharper late decay; higher LR longer didn't help, slightly worse
 pending	0.353424	0.646576	keep	Asymmetric dropout (enc=0.0, dec=0.1): clean encoder codes, decoder-only dropout regularises tied-weight reconstruction; new best
 pending	0.353932	0.646068	discard	Increase decoder dropout 0.1→0.15; too much decoder regularization slightly hurt reconstruction, 0.1 already optimal
+pending	0.353998	0.646002	discard	Residual code MLP (zero-init Linear 16→16→16 with SiLU) before decoder; +544 params, nonlinear code correction didn't improve — latent codes already well-optimized by tied weights
