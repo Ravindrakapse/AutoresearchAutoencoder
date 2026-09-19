@@ -100,3 +100,4 @@ pending	0.353370	0.646630	keep	Two mini warm restarts (70% at 10% peak + 85% at 
 pending	0.354170	0.645830	discard	Weight normalization on encoder linears (decouple magnitude/direction); decoupled optimization didn't help tied-weight regime, slightly worse
 pending	0.353378	0.646622	discard	Reset EMA at warm restart points (fresh average post-restart); stale pre-restart weights not the issue, slightly worse
 pending	0.358767	0.641233	discard	Log-cosh loss (2x scaled) instead of MSE; robust loss downweighted large residuals that MSE metric cares most about, worse
+pending	0.357179	0.642821	discard	Latent-to-output linear projection (zero-init Linear 16→128 added to decoder output); direct linear recon path from code didn't help at dim-16, worse
