@@ -109,3 +109,4 @@ pending	0.353408	0.646592	discard	Adaptive EMA decay near restarts (0.99 for 2% 
 pending	0.353399	0.646601	discard	Reset Adam optimizer state at warm restart points (clear momentum + second moments); fresh optimizer stats didn't help — stale moments not the bottleneck, slightly worse
 pending	0.353492	0.646508	discard	Shift warm restarts later (70%/85%→75%/90%): more main cosine phase time; slightly worse — 70%/85% timing already optimal
 pending	0.353756	0.646244	discard	Stochastic 85% data subsampling per epoch (implicit regularization + more epochs); fewer samples per epoch hurt more than extra epochs helped
+pending	0.354454	0.645546	discard	Per-batch EMA updates (decay^(1/N_batches) per step instead of per-epoch); finer tracking added overhead without improving averaging quality, slightly worse
