@@ -85,3 +85,4 @@ pending	0.353998	0.646002	discard	Residual code MLP (zero-init Linear 16→16→
 pending	0.353574	0.646426	discard	Increase LR 4e-3→5e-3 (re-test with beta2=0.9999 + asymmetric dropout); slightly worse — 4e-3 still optimal even with improved optimizer/regularization
 pending	0.355290	0.644710	discard	ELU activation instead of SiLU; ELU's exponential negative saturation worse than SiLU's smooth non-monotonic shape for tied-weight AE
 pending	0.354347	0.645653	discard	Cosine warmup (smooth join with cosine decay) instead of linear warmup; slightly worse — linear warmup's higher avg LR during ramp is better
+pending	0.353580	0.646420	discard	LR 4e-3→4.5e-3 (interpolate between 4e-3 best and 5e-3 near-miss); slightly worse — 4e-3 remains optimal
