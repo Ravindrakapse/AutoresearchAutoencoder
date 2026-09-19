@@ -113,3 +113,4 @@ pending	0.354454	0.645546	discard	Per-batch EMA updates (decay^(1/N_batches) per
 pending	0.353970	0.646030	discard	Post-EMA fine-tuning (3% budget, LR=1e-5): polish EMA weights to nearby loss minimum; fine-tuning degraded EMA smoothing benefit, slightly worse
 pending	0.353784	0.646216	discard	Third ultra-gentle warm restart at 95% (peak=5% of LR); extra restart shortened 85-100% phase without benefit, slightly worse
 pending	0.354427	0.645573	discard	Two hidden layers [128,128] (36K params, 2564 epochs); extra depth didn't compensate for fewer epochs, capacity not the bottleneck
+pending	0.353845	0.646155	discard	AMP (automatic mixed precision) training; GradScaler/autocast overhead reduced epochs 3500→2599 for this tiny model, fp16 didn't help
