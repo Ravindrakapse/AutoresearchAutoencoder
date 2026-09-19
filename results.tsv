@@ -95,3 +95,4 @@ pending	0.354538	0.645462	discard	Step dropout annealing (dec 0.1→0.0 at 85% p
 pending	0.356379	0.643621	discard	Spectral normalization on encoder linear layers (Lipschitz regularization on weight spectrum); too restrictive for small tied-weight model, constrained expressivity, worse
 pending	0.353999	0.646001	discard	Trapezoidal LR schedule (10% warmup + 10% flat at peak + 80% cosine decay); extra time at peak LR didn't help — less cosine decay time hurt fine convergence, slightly worse
 pending	0.353671	0.646329	discard	PCA_PRE_DIM 128→112; fewer params (~17K) + more epochs but lost PCA components 113-128 carry useful nonlinear signal, slightly worse
+pending	0.353379	0.646621	keep	Mini warm restart at 85% (peak=15% of LR): gentle late-training exploration escape local minimum, new best

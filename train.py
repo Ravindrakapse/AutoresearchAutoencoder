@@ -155,11 +155,16 @@ while True:
     progress = (time.time() - t_train0) / prepare.TIME_BUDGET
     if progress >= 1.0:
         break
+    RESTART_AT = 0.85  # mini warm restart at this progress fraction
+    RESTART_PEAK = LR * 0.15  # 15% of original peak LR
     if progress < WARMUP_FRAC:
         lr = LR * progress / WARMUP_FRAC
-    else:
-        p = (progress - WARMUP_FRAC) / (1.0 - WARMUP_FRAC)
+    elif progress < RESTART_AT:
+        p = (progress - WARMUP_FRAC) / (RESTART_AT - WARMUP_FRAC)
         lr = ETA_MIN + 0.5 * (LR - ETA_MIN) * (1 + math.cos(math.pi * p))
+    else:
+        p = (progress - RESTART_AT) / (1.0 - RESTART_AT)
+        lr = ETA_MIN + 0.5 * (RESTART_PEAK - ETA_MIN) * (1 + math.cos(math.pi * p))
     for g in opt.param_groups:
         g["lr"] = lr
 
