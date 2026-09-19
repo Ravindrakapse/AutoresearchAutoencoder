@@ -117,3 +117,4 @@ pending	0.353845	0.646155	discard	AMP (automatic mixed precision) training; Grad
 pending	0.353501	0.646499	discard	LR 4e-3→4.5e-3 + partial Adam momentum reset at warm restarts (zero exp_avg, keep exp_avg_sq); higher LR still slightly worse even with cleaner restarts
 pending	0.353402	0.646598	discard	Three warm restarts at 70%/82%/92% with escalating peaks (10%/12%/15% of LR); preserved 70% main phase but shorter cycles didn't improve over dual restarts
 pending	0.353876	0.646124	discard	Partial Adam momentum reset (zero exp_avg, keep exp_avg_sq) at warm restart points; stale momentum not the bottleneck at LR=4e-3, slightly worse
+pending	0.356216	0.643784	discard	Remove decoder BatchNorm (asymmetric normalization: BN in encoder only); decoder BN still important for tied-weight reconstruction, worse despite more epochs (4166 vs ~3500)
