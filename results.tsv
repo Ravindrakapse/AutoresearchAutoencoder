@@ -119,3 +119,4 @@ pending	0.353402	0.646598	discard	Three warm restarts at 70%/82%/92% with escala
 pending	0.353876	0.646124	discard	Partial Adam momentum reset (zero exp_avg, keep exp_avg_sq) at warm restart points; stale momentum not the bottleneck at LR=4e-3, slightly worse
 pending	0.356216	0.643784	discard	Remove decoder BatchNorm (asymmetric normalization: BN in encoder only); decoder BN still important for tied-weight reconstruction, worse despite more epochs (4166 vs ~3500)
 pending	0.354898	0.645102	discard	Dual EMA (0.998+0.9995, weights 0.6/0.4): blend short-term and long-term smoothed weights; long-term EMA included too many early suboptimal weights, worse
+pending	0.353699	0.646301	discard	Cycle consistency loss (alpha=0.01, every 4th batch): MSE(encode(decode(z)),z.detach()) idempotency reg; 3326 epochs (~5% fewer), regularization didn't offset epoch loss
