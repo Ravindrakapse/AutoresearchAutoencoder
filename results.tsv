@@ -98,3 +98,4 @@ pending	0.353671	0.646329	discard	PCA_PRE_DIM 128→112; fewer params (~17K) + m
 pending	0.353379	0.646621	keep	Mini warm restart at 85% (peak=15% of LR): gentle late-training exploration escape local minimum, new best
 pending	0.353370	0.646630	keep	Two mini warm restarts (70% at 10% peak + 85% at 15% peak): dual exploration escapes, new best
 pending	0.354170	0.645830	discard	Weight normalization on encoder linears (decouple magnitude/direction); decoupled optimization didn't help tied-weight regime, slightly worse
+pending	0.353378	0.646622	discard	Reset EMA at warm restart points (fresh average post-restart); stale pre-restart weights not the issue, slightly worse
