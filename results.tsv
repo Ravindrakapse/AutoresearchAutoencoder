@@ -104,3 +104,4 @@ pending	0.357179	0.642821	discard	Latent-to-output linear projection (zero-init 
 pending	0.354850	0.645150	discard	Per-layer LR (bottleneck 1.5x base): higher LR for 128→16 projection to explore projection space; overshot optimal projection, slightly worse
 pending	0.354446	0.645554	discard	Three mini warm restarts (55%@10%, 70%@13%, 85%@17%); third restart shortened main training phase too much, worse than dual restart
 pending	0.354478	0.645522	discard	Bottleneck-only weight decay (WD=1e-4 on Linear 128→16 only); targeted WD on subspace projection didn't help — tied weights already regularize bottleneck sufficiently
+pending	0.354579	0.645421	discard	Adam beta2=0.99999 (up from 0.9999); second-moment estimates became too stale, couldn't adapt to gradient changes during warm restarts, slightly worse
