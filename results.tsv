@@ -90,3 +90,4 @@ pending	0.354290	0.645710	discard	EMA decay 0.998→0.995 (shorter averaging win
 pending	0.354296	0.645704	discard	Cosine similarity auxiliary loss (alpha=0.05) added to MSE; directional regularization didn't help — MSE already captures angular accuracy sufficiently
 pending	0.356571	0.643429	discard	Code-conditioned decoder gate (FiLM-style sigmoid(Linear(z,128)) after decoder SiLU); multiplicative modulation added overhead without improving reconstruction, worse
 pending	0.355170	0.644830	discard	Widen hidden [128]->[160]; ~24K params, extra capacity with current regularization still didn't help — fewer epochs outweighed expressivity gain
+pending	0.353608	0.646392	discard	Higher LR (4e-3→4.5e-3) + stronger EMA (0.998→0.999); higher LR explores faster but stronger smoothing didn't compensate enough, slightly worse
