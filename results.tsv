@@ -93,3 +93,4 @@ pending	0.355170	0.644830	discard	Widen hidden [128]->[160]; ~24K params, extra 
 pending	0.353608	0.646392	discard	Higher LR (4e-3→4.5e-3) + stronger EMA (0.998→0.999); higher LR explores faster but stronger smoothing didn't compensate enough, slightly worse
 pending	0.354538	0.645462	discard	Step dropout annealing (dec 0.1→0.0 at 85% progress); fine-tuning without dropout noise didn't help — constant dropout better throughout
 pending	0.356379	0.643621	discard	Spectral normalization on encoder linear layers (Lipschitz regularization on weight spectrum); too restrictive for small tied-weight model, constrained expressivity, worse
+pending	0.353999	0.646001	discard	Trapezoidal LR schedule (10% warmup + 10% flat at peak + 80% cosine decay); extra time at peak LR didn't help — less cosine decay time hurt fine convergence, slightly worse
