@@ -83,3 +83,4 @@ pending	0.353424	0.646576	keep	Asymmetric dropout (enc=0.0, dec=0.1): clean enco
 pending	0.353932	0.646068	discard	Increase decoder dropout 0.1→0.15; too much decoder regularization slightly hurt reconstruction, 0.1 already optimal
 pending	0.353998	0.646002	discard	Residual code MLP (zero-init Linear 16→16→16 with SiLU) before decoder; +544 params, nonlinear code correction didn't improve — latent codes already well-optimized by tied weights
 pending	0.353574	0.646426	discard	Increase LR 4e-3→5e-3 (re-test with beta2=0.9999 + asymmetric dropout); slightly worse — 4e-3 still optimal even with improved optimizer/regularization
+pending	0.355290	0.644710	discard	ELU activation instead of SiLU; ELU's exponential negative saturation worse than SiLU's smooth non-monotonic shape for tied-weight AE
