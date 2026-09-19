@@ -112,3 +112,4 @@ pending	0.353756	0.646244	discard	Stochastic 85% data subsampling per epoch (imp
 pending	0.354454	0.645546	discard	Per-batch EMA updates (decay^(1/N_batches) per step instead of per-epoch); finer tracking added overhead without improving averaging quality, slightly worse
 pending	0.353970	0.646030	discard	Post-EMA fine-tuning (3% budget, LR=1e-5): polish EMA weights to nearby loss minimum; fine-tuning degraded EMA smoothing benefit, slightly worse
 pending	0.353784	0.646216	discard	Third ultra-gentle warm restart at 95% (peak=5% of LR); extra restart shortened 85-100% phase without benefit, slightly worse
+pending	0.354427	0.645573	discard	Two hidden layers [128,128] (36K params, 2564 epochs); extra depth didn't compensate for fewer epochs, capacity not the bottleneck
