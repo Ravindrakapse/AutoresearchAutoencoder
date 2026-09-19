@@ -87,3 +87,4 @@ pending	0.355290	0.644710	discard	ELU activation instead of SiLU; ELU's exponent
 pending	0.354347	0.645653	discard	Cosine warmup (smooth join with cosine decay) instead of linear warmup; slightly worse — linear warmup's higher avg LR during ramp is better
 pending	0.353580	0.646420	discard	LR 4e-3→4.5e-3 (interpolate between 4e-3 best and 5e-3 near-miss); slightly worse — 4e-3 remains optimal
 pending	0.354290	0.645710	discard	EMA decay 0.998→0.995 (shorter averaging window); worse — 0.998 window still optimal, shorter window too noisy
+pending	0.354296	0.645704	discard	Cosine similarity auxiliary loss (alpha=0.05) added to MSE; directional regularization didn't help — MSE already captures angular accuracy sufficiently
