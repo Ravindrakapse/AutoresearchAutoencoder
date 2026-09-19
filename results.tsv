@@ -91,3 +91,4 @@ pending	0.354296	0.645704	discard	Cosine similarity auxiliary loss (alpha=0.05) 
 pending	0.356571	0.643429	discard	Code-conditioned decoder gate (FiLM-style sigmoid(Linear(z,128)) after decoder SiLU); multiplicative modulation added overhead without improving reconstruction, worse
 pending	0.355170	0.644830	discard	Widen hidden [128]->[160]; ~24K params, extra capacity with current regularization still didn't help — fewer epochs outweighed expressivity gain
 pending	0.353608	0.646392	discard	Higher LR (4e-3→4.5e-3) + stronger EMA (0.998→0.999); higher LR explores faster but stronger smoothing didn't compensate enough, slightly worse
+pending	0.354538	0.645462	discard	Step dropout annealing (dec 0.1→0.0 at 85% progress); fine-tuning without dropout noise didn't help — constant dropout better throughout
