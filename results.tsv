@@ -122,3 +122,4 @@ pending	0.354898	0.645102	discard	Dual EMA (0.998+0.9995, weights 0.6/0.4): blen
 pending	0.353699	0.646301	discard	Cycle consistency loss (alpha=0.01, every 4th batch): MSE(encode(decode(z)),z.detach()) idempotency reg; 3326 epochs (~5% fewer), regularization didn't offset epoch loss
 pending	0.353546	0.646454	discard	SE attention block (reduction=16) in encoder before bottleneck; +2.2K params (21.5K total), 2781 epochs — learned channel gating didn't offset fewer epochs
 pending	0.354512	0.645488	discard	Soft Adam momentum decay (0.5x exp_avg) at warm restart points; halved momentum lost useful directional signal, worse than both full reset (0.353399) and no reset (0.353370)
+pending	0.354488	0.645512	discard	Parameter perturbation (0.5% of param std) at warm restart points; noise too disruptive, model couldn't fully recover to optimal basin
