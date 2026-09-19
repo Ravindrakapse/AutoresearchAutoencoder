@@ -102,3 +102,4 @@ pending	0.353378	0.646622	discard	Reset EMA at warm restart points (fresh averag
 pending	0.358767	0.641233	discard	Log-cosh loss (2x scaled) instead of MSE; robust loss downweighted large residuals that MSE metric cares most about, worse
 pending	0.357179	0.642821	discard	Latent-to-output linear projection (zero-init Linear 16→128 added to decoder output); direct linear recon path from code didn't help at dim-16, worse
 pending	0.354850	0.645150	discard	Per-layer LR (bottleneck 1.5x base): higher LR for 128→16 projection to explore projection space; overshot optimal projection, slightly worse
+pending	0.354446	0.645554	discard	Three mini warm restarts (55%@10%, 70%@13%, 85%@17%); third restart shortened main training phase too much, worse than dual restart
